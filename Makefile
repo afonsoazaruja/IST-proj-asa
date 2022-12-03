@@ -8,3 +8,5 @@ clean:
 
 run:
 	./program
+
+new: clean program run

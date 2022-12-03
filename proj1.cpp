@@ -27,17 +27,18 @@ void print_matrix(int n, int m, matrix &mat) {
 }
 
 void compute_areas(int n, int m, matrix &mat) {
-    for(int i = 0; i < n-1; i++) {
-        for(int j = 0; j < m-1; j++) {
-            cout << mat.at(i).at(j);
-            if(mat.at(i).at(j) == 0) i++;
-            else {
-                if(mat.at(i+1).at(j) == mat.at(i).at(j+1))
-                    mat.at(i).at(j)++;
-            }
+    int biggest_square = 0;
+    for(int i = 0; i < n; i++) {
+        int k = 0;
+        for(int j = 0; (j < m) && (mat.at(i).at(j) > 0) && (i+j < n); j++) {
+            k++;
         }
+        if(k > biggest_square) biggest_square = k;
     }
+    cout << "\n" << biggest_square;
 }
+
+
 
 
 
@@ -56,6 +57,5 @@ int main() {
     initialize_matrix(n, m, area, mat);
     print_matrix(n, m, mat);
     compute_areas(n, m, mat);
-    print_matrix(n, m, mat);
     return 0;
 }
