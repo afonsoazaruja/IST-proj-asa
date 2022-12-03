@@ -28,14 +28,29 @@ void print_matrix(int n, int m, matrix &mat) {
 
 void compute_areas(int n, int m, matrix &mat) {
     int biggest_square = 0;
+    int times = 0;
     for(int i = 0; i < n; i++) {
-        int k = 0;
-        for(int j = 0; (j < m) && (mat.at(i).at(j) > 0) && (i+j < n); j++) {
-            k++;
+        int size = 0;
+        int col = 0;
+        for(int j = 0; (j < m) && (mat.at(i).at(j) > 0); j++) {
+            if(i+j-col < n) {
+                size++;
+            }
+            else {
+                if(size > biggest_square) {biggest_square = size; times = 1;}
+                else if(size == biggest_square) {times++;}
+                if(j < m) {
+                    j -= size;
+                    size = 0;
+                    col++;
+                    
+                }
+            }
         }
-        if(k > biggest_square) biggest_square = k;
+        if(size > biggest_square) {biggest_square = size; times = 1;}
+        else if(size == biggest_square) times++;
     }
-    cout << "\n" << biggest_square;
+    cout << "\nsize:" << biggest_square << "\ntimes:" << times;
 }
 
 
