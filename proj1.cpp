@@ -24,13 +24,15 @@ void print_matrix(int n, int m, matrix &mat) {
             cout << y;
         }
     }
+    cout << "\n";
 }
 
-int compute_max_area_by_vec(int n, vector<int> area) {
+int compute_max_area_by_vec(int n, vector<int> &area) {
     int max = 0;
     for(int i = 0; i < n; i++) {
         int square = area.at(i);
         if((square <= n) && (i+square <= n) && (square > max)) max = square;
+        else if((square > n) && (n-i == n) && (square > max)) max = n-i;
     }
     return max;
 }
@@ -48,21 +50,22 @@ matrix copy_matrix(int n, int m, matrix &mat) {
 }
 
 void clear_area(matrix &mat, int l, int c, int size) {
-    for(int i = l; i < l+size-1; i++) { 
-        for(int j = c; j < c+size-1; j++) {
+    for(int i = l; i < l+size; i++) { 
+        for(int j = c; j < c+size; j++) {
             mat.at(i).at(j) = 0;
         }
     }
 }
 
-int compute_max_by_matrix(int n, int m, matrix &mat, int max_size) {
+int compute_areas(int n, int m, matrix &mat, int max_size) {
     int big = 0;
     int times = 0;
     for(int i = 0; i < n-1; i++) {
         for(int j = 0; j < m-1; j++) {
-            int size = 1;
+            int size = 0;
             bool valid = true;
             if((mat.at(i).at(j) == 1) && mat.at(i+1).at(j+1) == 1) {
+                size++;
                 for(int iter = 1; (i+iter < n) && (j+iter < m) && (valid == true); iter++) {
                     for(int k = i+iter; k >= i; k--) {
                         if(mat.at(k).at(j+iter) == 0) {valid = false;}
@@ -73,10 +76,9 @@ int compute_max_by_matrix(int n, int m, matrix &mat, int max_size) {
                     if(valid) {
                         size++;
                         if(size == max_size) {
-                            matrix aux = copy_matrix(n, m, mat);
+                            matrix aux = copy_matrix(n, m, mat); 
                             clear_area(aux, i, j, size);
-                            print_matrix(n, m, aux);
-                            return compute_max_by_matrix(n, m, aux, max_size) + 1;
+                            return compute_areas(n, m, aux, max_size) + 1;
                         }
                     }
                 }
@@ -85,9 +87,9 @@ int compute_max_by_matrix(int n, int m, matrix &mat, int max_size) {
             else if(size == big) times++;
         }
     }
-    //cout << "\nsize:" << big << "\ntimes:" << times;
-    if(max_size < 1) return 0;
-    else return compute_max_by_matrix(n, m, mat, max_size-1) + 1;
+    cout << "\nsize:" << big << "\ntimes:" << times;
+    if(big < 1) return 1;
+    else return compute_areas(n, m, mat, max_size-1) + 1;
 }
 
 int main() {
@@ -104,7 +106,12 @@ int main() {
     initialize_matrix(n, m, area, mat);
     print_matrix(n, m, mat);
     int initial_max = compute_max_area_by_vec(n, area);
-    int ways = compute_max_by_matrix(n, m, mat, initial_max);
+    if(initial_max < 2) {
+        cout << "\nPossibilidades: " << initial_max;
+        return 0;
+    }
+
+    int ways = compute_areas(n, m, mat, initial_max);
     cout << "\nPossibilidades: " << ways; 
     return 0;
 }
