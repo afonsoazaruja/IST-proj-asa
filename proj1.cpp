@@ -75,7 +75,6 @@ int compute_matrix(int n, int m, int square, matrix &mat, vector<int> &area) {
             aux_mat.at(lin + size).at(i) = 0;
         }
     }
-    //print_matrix(n, m, aux_mat);
     for(int i = lin; i < size + lin; i++) {
         aux_area.at(i) -= size;
     }
@@ -86,8 +85,7 @@ int compute_matrix(int n, int m, int square, matrix &mat, vector<int> &area) {
     else {
         if(size-1 == 0) return 0 + compute_matrix(n, m, 999, aux_mat, aux_area);
         else return compute_matrix(n, m, size-1, mat, area) + compute_matrix(n, m, 999, aux_mat, aux_area);
-        }
-    //if(only_square_1(n, aux_area)) {return 1 + compute_matrix(n, m, size-1, mat, area);}
+    }
 }
 
 int main() {
@@ -100,10 +98,8 @@ int main() {
         area.at(i) = k;
     }
     initialize_matrix(n, m, area, mat);
-    //print_matrix(n, m, mat);
     if(area.at(n-1) == 0) cout << 0 << "\n";
     else if(only_square_1(n, area)) cout << 1 << "\n";
     else cout << compute_matrix(n, m, 999, mat, area) << "\n";
-    //cout << only_square_1(n, area)<< "\n";
     return 0;
 }
