@@ -1,4 +1,4 @@
-#include <iostream>
+  #include <iostream>
 #include <vector>
 
 using namespace std;
@@ -7,13 +7,13 @@ typedef vector<vector<int>> matrix;
 
 void initialize_matrix(int n, int m, vector<int> &area, matrix &mat) {
     for(int i = 0; i < n; i++) {
-        vector<int> vec = {};
+        vector<int> vec(m);
         int l = area.at(i);
         for(int j = 0; j < m; j++) {
-            if(j < l) vec.push_back(1);
-            else {vec.push_back(0);}
+            if(j < l) vec.at(j) = 1;
+            else {vec.at(j) = 0;}
         }
-        mat.push_back(vec);
+        mat.at(i) = vec;
     }
 }
 
@@ -40,11 +40,19 @@ int compute_max_area_by_vec(int n, vector<int> &area) {
 matrix copy_matrix(int n, int m, matrix &mat) {
     matrix copy = {};
     for(int i = 0; i<n; i++) {
-        vector<int> vec = {};
+        vector<int> vec(m);
         for(int j = 0; j<m; j++) {
             vec.push_back(mat.at(i).at(j));
         }
         copy.push_back(vec);
+    }
+    return copy;
+}
+
+vector<int> copy_vector(int n, vector<int> &area) {
+    vector<int> copy(n);
+    for(int i = 0; i < n; i++) {
+        copy.at(i) = area.at(i);
     }
     return copy;
 }
@@ -92,26 +100,57 @@ int compute_areas(int n, int m, matrix &mat, int max_size) {
     else return compute_areas(n, m, mat, max_size-1) + 1;
 }
 
+vector<int> find_start(int n, vector<int> &area) {
+    vector<int> coord(2);
+    coord.at(0) = 0;
+    coord.at(1) = area.at(0);
+    for(int lin = 1; lin < n; lin++) {
+        int value = area.at(lin);
+        if(value > coord.at(1)) {coord.at(1) = value; coord.at(0) = lin;}
+    }
+    return coord;
+}
+
+int compute(int n, int m, int square, matrix &mat, vector<int> &area) {
+    if(square == 0) return 0;
+    vector<int> coord = find_start(n, area);
+    matrix aux_mat = copy_matrix(n, m, mat);
+    vector<int> aux_area = copy_vector(n, area);
+    int lin = coord.at(0);
+    int col = coord.at(1) - 1;
+    int size = 0;
+    cout << "\n" << lin << col << "\n";
+    for(; (lin + size < n) && (col - size < m) && (size < square); size++) {
+        aux_mat.at(lin+size).at(col+size) = 0;
+        for(int i = lin + size; (size > 0) && (i - lin > size); i--) {
+            aux_mat.at(i).at(col + size) = 0;
+        }
+        for(int i = col + size; (size > 0) && (i - col > size); i++) {
+            aux_mat.at(lin + size).at(i) = 0;
+        }
+    }
+    for(int i = lin; i < size + lin; i++) {
+        aux_area.at(i) = aux_area.at(i) - size;
+    }
+    bool finished = true;
+    for(int i = 0; i < n; i++) {
+        if(aux_area.at(i) != 0) finished = false;
+    }
+    if(finished) return 1;
+    else return compute(n, m, size-1, mat, area) + compute(n, m, 999, aux_mat, aux_area);
+}
+
 int main() {
     int n, m, k;
-    vector<int> area = {};
-    matrix mat = {};
- 
     cin >> n >> m;
+    matrix mat(n);
+    vector<int> area(n);
     for(int i = 0; i < n; i++) {
         cin >> k;
-        area.push_back(k);
+        area.at(i) = k;
     }
- 
     initialize_matrix(n, m, area, mat);
     print_matrix(n, m, mat);
-    int initial_max = compute_max_area_by_vec(n, area);
-    if(initial_max < 2) {
-        cout << "\nPossibilidades: " << initial_max;
-        return 0;
-    }
-
-    int ways = compute_areas(n, m, mat, initial_max);
-    cout << "\nPossibilidades: " << ways; 
+    cout << compute(n, m, 999, mat, area) << "\endl";
     return 0;
 }
