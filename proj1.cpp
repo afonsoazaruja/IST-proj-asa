@@ -27,6 +27,15 @@ void print_matrix(int n, int m, matrix &mat) {
     cout << "\n";
 }
 
+bool only_square_1(int n, vector<int> &area) {
+    int l = area.at(0);
+    for(int i = 1; i < n; i++) {
+        if(area.at(i) >= l && l > 1) {return false;}
+        else {l = area.at(i);} 
+    }
+    return true;
+}
+
 matrix copy_matrix(int n, int m, matrix &mat) {
     matrix copy(n);
     for(int i = 0; i < n; i++) {
@@ -47,24 +56,16 @@ vector<int> copy_vector(int n, vector<int> &area) {
     return copy;
 }
 
-vector<int> find_start(int n, vector<int> &area) {
-    vector<int> coord(2);
-    coord.at(0) = 0;
-    coord.at(1) = area.at(0);
-    for(int lin = 1; lin < n; lin++) {
-        int value = area.at(lin);
-        if(value > coord.at(1)) {coord.at(1) = value; coord.at(0) = lin;}
-    }
-    return coord;
-}
-
 int compute(int n, int m, int square, matrix &mat, vector<int> &area) {
     if(square == 0) return 0;
-    vector<int> coord = find_start(n, area);
     matrix aux_mat = copy_matrix(n, m, mat);
     vector<int> aux_area = copy_vector(n, area);
-    int lin = coord.at(0);
-    int col = coord.at(1) - 1;
+    int lin = 0;
+    int col = area.at(0)-1;
+    for(int l = 1; l < n; l++) {
+        int value = area.at(l)-1;
+        if(value > col) {col = value; lin = l;}
+    }
     //cout << "\n" << lin << col << "\n";
     aux_mat.at(lin).at(col) = 0;
     int size = 1;
@@ -77,18 +78,10 @@ int compute(int n, int m, int square, matrix &mat, vector<int> &area) {
         }
     }
     //print_matrix(n, m, aux_mat);
-
     for(int i = lin; i < size + lin; i++) {
         aux_area.at(i) = aux_area.at(i) - size;
     }
-    bool finished = true;
-    for(int i = 0; i < n; i++) {
-        if(aux_area.at(i) != 0) finished = false;
-    }
-    if(finished) {
-        //cout << "ENTROU\n"; 
-        return 1 + compute(n, m, size-1, mat, area);
-        }
+    if(only_square_1(n, aux_area)) {return 1 + compute(n, m, size-1, mat, area);}
     else return compute(n, m, size-1, mat, area) + compute(n, m, 999, aux_mat, aux_area);
 }
 
@@ -104,5 +97,6 @@ int main() {
     initialize_matrix(n, m, area, mat);
     //print_matrix(n, m, mat);
     cout << compute(n, m, 999, mat, area) << "\n";
+    //cout << only_square_1(n, area)<< "\n";
     return 0;
 }
