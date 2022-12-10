@@ -7,11 +7,10 @@ typedef vector<vector<int>> matrix;
 
 void initialize_matrix(int n, int m, vector<int> &area, matrix &mat) {
     for(int i = 0; i < n; i++) {
-        vector<int> vec(m);
+        vector<int> vec(m, 0);
         int l = area.at(i);
-        for(int j = 0; j < m; j++) {
-            if(j < l) vec.at(j) = 1;
-            else {vec.at(j) = 0;}
+        for(int j = 0; j < l; j++) {
+            vec.at(j) = 1;
         }
         mat.at(i) = vec;
     }
@@ -56,7 +55,7 @@ vector<int> copy_vector(int n, vector<int> &area) {
     return copy;
 }
 
-int compute(int n, int m, int square, matrix &mat, vector<int> &area) {
+int compute_matrix(int n, int m, int square, matrix &mat, vector<int> &area) {
     if(square == 0) return 0;
     matrix aux_mat = copy_matrix(n, m, mat);
     vector<int> aux_area = copy_vector(n, area);
@@ -66,23 +65,29 @@ int compute(int n, int m, int square, matrix &mat, vector<int> &area) {
         int value = area.at(l)-1;
         if(value > col) {col = value; lin = l;}
     }
-    //cout << "\n" << lin << col << "\n";
     aux_mat.at(lin).at(col) = 0;
     int size = 1;
-    for(; (lin + size < n) && (col - size > -1) && (size < square) && (aux_mat.at(lin+size).at(col) != 0); size++) {
+    for(; (lin + size < n) && (col - size >= 0) && (size < square) && (aux_mat.at(lin+size).at(col) != 0); size++) {
         for(int i = lin + size; (i >= lin); i--) {
             aux_mat.at(i).at(col - size) = 0;
         }
-        for(int i = col - size; i <= col; i++) {
+        for(int i = col - size + 1; i <= col; i++) {
             aux_mat.at(lin + size).at(i) = 0;
         }
     }
     //print_matrix(n, m, aux_mat);
     for(int i = lin; i < size + lin; i++) {
-        aux_area.at(i) = aux_area.at(i) - size;
+        aux_area.at(i) -= size;
     }
-    if(only_square_1(n, aux_area)) {return 1 + compute(n, m, size-1, mat, area);}
-    else return compute(n, m, size-1, mat, area) + compute(n, m, 999, aux_mat, aux_area);
+    if(only_square_1(n, aux_area)) {
+        if(size-1 == 0) return 1;
+        else {return 1 + compute_matrix(n, m, size-1, mat, area);}
+    }
+    else {
+        if(size-1 == 0) return 0 + compute_matrix(n, m, 999, aux_mat, aux_area);
+        else return compute_matrix(n, m, size-1, mat, area) + compute_matrix(n, m, 999, aux_mat, aux_area);
+        }
+    //if(only_square_1(n, aux_area)) {return 1 + compute_matrix(n, m, size-1, mat, area);}
 }
 
 int main() {
@@ -96,7 +101,9 @@ int main() {
     }
     initialize_matrix(n, m, area, mat);
     //print_matrix(n, m, mat);
-    cout << compute(n, m, 999, mat, area) << "\n";
+    if(area.at(n-1) == 0) cout << 0 << "\n";
+    else if(only_square_1(n, area)) cout << 1 << "\n";
+    else cout << compute_matrix(n, m, 999, mat, area) << "\n";
     //cout << only_square_1(n, area)<< "\n";
     return 0;
 }
