@@ -91,6 +91,41 @@ int compute_vector(int n, vector<int> &area, int lin, int square) {
     for(int i = lin; i < lin + square; i++) {
         copy.at(i) -= square;
     }
+
+    if(dp.count(copy) == 1) {
+        if(square == 1) {return dp[copy];}
+        else {
+            dp[area] = compute_vector(n, area, lin, square-1);
+            return dp[area] + dp[copy];
+        }
+    }
+    else {
+        if(only_square_1(n, copy)) {
+            if(square == 1) {dp[copy] = 1; return 1;}
+            else {
+                dp[area] = compute_vector(n, area, lin, square-1);
+                dp[copy] = 1;
+                return dp[area] + dp[copy];
+            }
+        }
+        else {
+            if(square == 1) {
+                dp[copy] = compute_vector(n, copy, 0, -1);
+                return dp[copy];
+            }
+            else {
+                dp[area] = compute_vector(n, area, lin, square-1);
+                dp[copy] = compute_vector(n, copy, 0, -1);
+                return dp[area] + dp[copy];
+            }
+        }
+    }
+
+
+
+
+
+    /*
     if(only_square_1(n, copy)) {
         dp[copy] = 1;
         if(square == 1) return 1;
@@ -113,6 +148,7 @@ int compute_vector(int n, vector<int> &area, int lin, int square) {
             return dp.at(area) + dp.at(copy);
         }
     }
+    */
 }
 
 int compute_matrix(int n, int m, int square, matrix &mat, vector<int> &area) {
