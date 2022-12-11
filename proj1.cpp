@@ -1,9 +1,13 @@
 #include <iostream>
 #include <vector>
+#include <bits/stdc++.h>
 
 using namespace std;
 
 typedef vector<vector<int>> matrix;
+
+map<vector<int>, int> dp;
+
 
 void initialize_matrix(int n, int m, vector<int> &area, matrix &mat) {
     for(int i = 0; i < n; i++) {
@@ -87,13 +91,24 @@ int compute_vector(int n, vector<int> &area, int lin, int square) {
     for(int i = lin; i < lin + square; i++) {
         copy.at(i) -= square;
     }
+    if(dp.find(copy) == true) return dp.at(copy);
     if(only_square_1(n, copy)) {
+        dp.insert(copy, 1);
         if(square == 1) return 1;
-        else return 1 + compute_vector(n, area, lin, square-1);
+        else {
+            dp.insert(area, 1 + compute_vector(n, area, lin, square-1));
+            return 1;
     }
     else {
-        if(square == 1) return compute_vector(n, copy, 0, -1);
-        else return compute_vector(n, area, lin, square-1) + compute_vector(n, copy, 0, -1);
+        dp.insert(copy, compute_vector(n, copy, 0, -1));
+        if(square == 1) { 
+            return dp.at(copy);
+        }
+        else {
+            dp.insert(area, compute_vector(n, area, lin, square-1))
+            return dp.at(area) + dp.at(copy);
+            return compute_vector(n, area, lin, square-1) + compute_vector(n, copy, 0, -1);
+        }
     }
 }
 
@@ -139,7 +154,8 @@ int main() {
         area.at(i) = k;
     }
     initialize_matrix(n, m, area, mat);
-    if(area.at(n-1) == 0) cout << 0 << "\n";
+    print_matrix(n, m, mat);
+    if(n == 0 || area.at(n-1) == 0) cout << 0 << "\n";
     else if(only_square_1(n, area)) cout << 1 << "\n";
     //else cout << compute_matrix(n, m, 999, mat, area) << "\n";
     else cout << compute_vector(n, area, 0, -1) << "\n";
