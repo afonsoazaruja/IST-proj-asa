@@ -6,7 +6,7 @@ using namespace std;
 
 typedef vector<vector<int>> matrix;
 
-map<vector<int>, int> dp;
+map<vector<int>, long> dp;
 
 
 void initialize_matrix(int n, int m, vector<int> &area, matrix &mat) {
@@ -91,21 +91,22 @@ int compute_vector(int n, vector<int> &area, int lin, int square) {
     for(int i = lin; i < lin + square; i++) {
         copy.at(i) -= square;
     }
-    if(dp.find(copy) == true) return dp.at(copy);
+    if(dp.count(copy) == 1) return dp.at(copy);
     if(only_square_1(n, copy)) {
-        dp.insert(copy, 1);
+        dp[copy] = 1;
         if(square == 1) return 1;
         else {
-            dp.insert(area, 1 + compute_vector(n, area, lin, square-1));
-            return 1;
+            dp[area] = compute_vector(n, area, lin, square-1);
+            return 1 + dp[area];
+        }
     }
     else {
-        dp.insert(copy, compute_vector(n, copy, 0, -1));
+        dp[copy] = compute_vector(n, copy, 0, -1);
         if(square == 1) { 
             return dp.at(copy);
         }
         else {
-            dp.insert(area, compute_vector(n, area, lin, square-1))
+            dp[area] = compute_vector(n, area, lin, square-1);
             return dp.at(area) + dp.at(copy);
             return compute_vector(n, area, lin, square-1) + compute_vector(n, copy, 0, -1);
         }
