@@ -4,14 +4,14 @@
 
 using namespace std;
 
-typedef vector<vector<int>> matrix;
+typedef vector<vector<long>> matrix;
 
-map<vector<int>, long> dp;
+map<vector<long>, long long> dp;
 
 
-void initialize_matrix(int n, int m, vector<int> &area, matrix &mat) {
+void initialize_matrix(int n, int m, vector<long> &area, matrix &mat) {
     for(int i = 0; i < n; i++) {
-        vector<int> vec(m, 0);
+        vector<long> vec(m, 0);
         int l = area.at(i);
         for(int j = 0; j < l; j++) {
             vec.at(j) = 1;
@@ -21,7 +21,7 @@ void initialize_matrix(int n, int m, vector<int> &area, matrix &mat) {
 }
 
 void print_matrix(int n, int m, matrix &mat) {
-    for(vector<int> x : mat) {
+    for(vector<long> x : mat) {
         cout << "\n";
         for(int y : x) {
             cout << y;
@@ -30,7 +30,7 @@ void print_matrix(int n, int m, matrix &mat) {
     cout << "\n";
 }
 
-void print_vector(vector<int> &vec) {
+void print_vector(vector<long> &vec) {
     cout << "\n";
     for(int x : vec) {
         cout << x;
@@ -38,7 +38,7 @@ void print_vector(vector<int> &vec) {
     cout << "\n";
 }
 
-bool only_square_1(int n, vector<int> &area) {
+bool only_square_1(int n, vector<long> &area) {
     int l = area.at(0);
     for(int i = 1; i < n; i++) {
         if(area.at(i) >= l && l > 1) {return false;}
@@ -51,7 +51,7 @@ bool only_square_1(int n, vector<int> &area) {
 matrix copy_matrix(int n, int m, matrix &mat) {
     matrix copy(n);
     for(int i = 0; i < n; i++) {
-        vector<int> vec(m);
+        vector<long> vec(m);
         for(int j = 0; j<m; j++) {
             vec.at(j) = mat.at(i).at(j);
         }
@@ -60,16 +60,16 @@ matrix copy_matrix(int n, int m, matrix &mat) {
     return copy;
 }
 
-vector<int> copy_vector(int n, vector<int> &area) {
-    vector<int> copy(n);
+vector<long> copy_vector(int n, vector<long> &area) {
+    vector<long> copy(n);
     for(int i = 0; i < n; i++) {
         copy.at(i) = area.at(i);
     }
     return copy;
 }
 
-int compute_vector(int n, vector<int> &area, int lin, int square) {
-    vector<int> copy(n);
+int compute_vector(int n, vector<long> &area, int lin, int square) {
+    vector<long> copy(n);
     for(int i = 0; i < n; i++) {
         copy.at(i) = area.at(i);
     }
@@ -120,40 +120,11 @@ int compute_vector(int n, vector<int> &area, int lin, int square) {
             }
         }
     }
-
-
-
-
-
-    /*
-    if(only_square_1(n, copy)) {
-        dp[copy] = 1;
-        if(square == 1) return 1;
-        else {
-            dp[area] = compute_vector(n, area, lin, square-1);
-            return 1 + dp[area];
-        }
-    }
-    else {
-        dp[copy] = compute_vector(n, copy, 0, -1);
-        if(square == 1) { 
-            return dp.at(copy);
-        }
-        else {
-            if(dp.count(copy) == 1) {
-                dp[area] = compute_vector(n, area, lin, square-1);
-                return dp.at(copy) + dp.at(area);
-            }
-            dp[area] = compute_vector(n, area, lin, square-1);
-            return dp.at(area) + dp.at(copy);
-        }
-    }
-    */
 }
 
-int compute_matrix(int n, int m, int square, matrix &mat, vector<int> &area) {
+int compute_matrix(int n, int m, int square, matrix &mat, vector<long> &area) {
     matrix aux_mat = copy_matrix(n, m, mat);
-    vector<int> aux_area = copy_vector(n, area);
+    vector<long> aux_area = copy_vector(n, area);
     int lin = 0;
     int col = area.at(0)-1;
     for(int l = 1; l < n; l++) {
@@ -187,13 +158,13 @@ int main() {
     int n, m, k;
     cin >> n >> m;
     matrix mat(n);
-    vector<int> area(n);
+    vector<long> area(n);
     for(int i = 0; i < n; i++) {
         cin >> k;
         area.at(i) = k;
     }
     initialize_matrix(n, m, area, mat);
-    print_matrix(n, m, mat);
+    //print_matrix(n, m, mat);
     if(n == 0 || area.at(n-1) == 0) cout << 0 << "\n";
     else if(only_square_1(n, area)) cout << 1 << "\n";
     //else cout << compute_matrix(n, m, 999, mat, area) << "\n";
