@@ -26,12 +26,21 @@ void print_matrix(int n, int m, matrix &mat) {
     cout << "\n";
 }
 
+void print_vector(vector<int> &vec) {
+    cout << "\n";
+    for(int x : vec) {
+        cout << x;
+    }
+    cout << "\n";
+}
+
 bool only_square_1(int n, vector<int> &area) {
     int l = area.at(0);
     for(int i = 1; i < n; i++) {
         if(area.at(i) >= l && l > 1) {return false;}
         else {l = area.at(i);} 
     }
+
     return true;
 }
 
@@ -55,8 +64,37 @@ vector<int> copy_vector(int n, vector<int> &area) {
     return copy;
 }
 
+int compute_vector(int n, vector<int> &area, int lin, int square) {
+    vector<int> copy(n);
+    for(int i = 0; i < n; i++) {
+        copy.at(i) = area.at(i);
+    }
+    if(square == -1) {
+        int col = area.at(0);
+        int consecutive = 1;  
+            for(int i = 1; i < n; i++) {
+                int sq = area.at(i);
+                if(sq == col) consecutive++;
+                else if(sq > col) {lin = i; col = sq; consecutive = 1;}
+            }
+        if(col > consecutive) square = consecutive;
+        else square = col;
+    }
+    for(int i = lin; i < lin + square; i++) {
+        copy.at(i) -= square;
+    }
+    print_vector(copy);
+    if(only_square_1(n, copy)) {
+        if(square == 1) return 1;
+        else return 1 + compute_vector(n, area, lin, square-1);
+    }
+    else {
+        if(square == 1) return compute_vector(n, copy, 0, -1);
+        else return compute_vector(n, area, lin, square-1) + compute_vector(n, copy, 0, -1);
+    }
+}
+
 int compute_matrix(int n, int m, int square, matrix &mat, vector<int> &area) {
-    if(square == 0) return 0;
     matrix aux_mat = copy_matrix(n, m, mat);
     vector<int> aux_area = copy_vector(n, area);
     int lin = 0;
@@ -78,12 +116,12 @@ int compute_matrix(int n, int m, int square, matrix &mat, vector<int> &area) {
     for(int i = lin; i < size + lin; i++) {
         aux_area.at(i) -= size;
     }
-    if(only_square_1(n, aux_area)) {
+    if(only_square_1(n, aux_area)) { // se só sobrarem quadrados 1x1 por preencher
         if(size-1 == 0) return 1;
-        else {return 1 + compute_matrix(n, m, size-1, mat, area);}
+        else return 1 + compute_matrix(n, m, size-1, mat, area);
     }
     else {
-        if(size-1 == 0) return 0 + compute_matrix(n, m, 999, aux_mat, aux_area);
+        if(size-1 == 0) return compute_matrix(n, m, 999, aux_mat, aux_area);
         else return compute_matrix(n, m, size-1, mat, area) + compute_matrix(n, m, 999, aux_mat, aux_area);
     }
 }
@@ -100,6 +138,7 @@ int main() {
     initialize_matrix(n, m, area, mat);
     if(area.at(n-1) == 0) cout << 0 << "\n";
     else if(only_square_1(n, area)) cout << 1 << "\n";
-    else cout << compute_matrix(n, m, 999, mat, area) << "\n";
+    //else cout << compute_matrix(n, m, 999, mat, area) << "\n";
+    else cout << compute_vector(n, area, 0, -1) << "\n";
     return 0;
 }
