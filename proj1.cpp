@@ -71,11 +71,15 @@ int compute_vector(int n, vector<int> &area, int lin, int square) {
     }
     if(square == -1) {
         int col = area.at(0);
-        int consecutive = 1;  
+        int consecutive = 1;
+        bool previous = (col == area.at(1));
+        bool next = false;
             for(int i = 1; i < n; i++) {
                 int sq = area.at(i);
-                if(sq == col) consecutive++;
-                else if(sq > col) {lin = i; col = sq; consecutive = 1;}
+                if(next == true) {previous = true; next = false;}
+                if((sq == col) && (previous)) consecutive++;
+                else if(sq > col) {lin = i; col = sq; consecutive = 1; previous = false; next = true;}
+                else previous = false;
             }
         if(col > consecutive) square = consecutive;
         else square = col;
@@ -83,7 +87,6 @@ int compute_vector(int n, vector<int> &area, int lin, int square) {
     for(int i = lin; i < lin + square; i++) {
         copy.at(i) -= square;
     }
-    print_vector(copy);
     if(only_square_1(n, copy)) {
         if(square == 1) return 1;
         else return 1 + compute_vector(n, area, lin, square-1);
