@@ -4,31 +4,7 @@
 
 using namespace std;
 
-typedef vector<vector<long>> matrix;
-
 map<vector<long>, long long> dp;
-
-
-void initialize_matrix(int n, int m, vector<long> &area, matrix &mat) {
-    for(int i = 0; i < n; i++) {
-        vector<long> vec(m, 0);
-        int l = area.at(i);
-        for(int j = 0; j < l; j++) {
-            vec.at(j) = 1;
-        }
-        mat.at(i) = vec;
-    }
-}
-
-void print_matrix(int n, int m, matrix &mat) {
-    for(vector<long> x : mat) {
-        cout << "\n";
-        for(int y : x) {
-            cout << y;
-        }
-    }
-    cout << "\n";
-}
 
 void print_vector(vector<long> &vec) {
     cout << "\n";
@@ -48,18 +24,6 @@ bool only_square_1(int n, vector<long> &area) {
     return true;
 }
 
-matrix copy_matrix(int n, int m, matrix &mat) {
-    matrix copy(n);
-    for(int i = 0; i < n; i++) {
-        vector<long> vec(m);
-        for(int j = 0; j<m; j++) {
-            vec.at(j) = mat.at(i).at(j);
-        }
-        copy.at(i) = vec;
-    }
-    return copy;
-}
-
 vector<long> copy_vector(int n, vector<long> &area) {
     vector<long> copy(n);
     for(int i = 0; i < n; i++) {
@@ -68,7 +32,7 @@ vector<long> copy_vector(int n, vector<long> &area) {
     return copy;
 }
 
-int compute_vector(int n, vector<long> &area, int lin, int square) {
+long long compute_vector(int n, vector<long> &area, int lin, int square) {
     vector<long> copy(n);
     for(int i = 0; i < n; i++) {
         copy.at(i) = area.at(i);
@@ -122,52 +86,16 @@ int compute_vector(int n, vector<long> &area, int lin, int square) {
     }
 }
 
-int compute_matrix(int n, int m, int square, matrix &mat, vector<long> &area) {
-    matrix aux_mat = copy_matrix(n, m, mat);
-    vector<long> aux_area = copy_vector(n, area);
-    int lin = 0;
-    int col = area.at(0)-1;
-    for(int l = 1; l < n; l++) {
-        int value = area.at(l)-1;
-        if(value > col) {col = value; lin = l;}
-    }
-    aux_mat.at(lin).at(col) = 0;
-    int size = 1;
-    for(; (lin + size < n) && (col - size >= 0) && (size < square) && (aux_mat.at(lin+size).at(col) != 0); size++) {
-        for(int i = lin + size; (i >= lin); i--) {
-            aux_mat.at(i).at(col - size) = 0;
-        }
-        for(int i = col - size + 1; i <= col; i++) {
-            aux_mat.at(lin + size).at(i) = 0;
-        }
-    }
-    for(int i = lin; i < size + lin; i++) {
-        aux_area.at(i) -= size;
-    }
-    if(only_square_1(n, aux_area)) { // se só sobrarem quadrados 1x1 por preencher
-        if(size-1 == 0) return 1;
-        else return 1 + compute_matrix(n, m, size-1, mat, area);
-    }
-    else {
-        if(size-1 == 0) return compute_matrix(n, m, 999, aux_mat, aux_area);
-        else return compute_matrix(n, m, size-1, mat, area) + compute_matrix(n, m, 999, aux_mat, aux_area);
-    }
-}
-
 int main() {
     int n, m, k;
     cin >> n >> m;
-    matrix mat(n);
     vector<long> area(n);
     for(int i = 0; i < n; i++) {
         cin >> k;
         area.at(i) = k;
     }
-    initialize_matrix(n, m, area, mat);
-    //print_matrix(n, m, mat);
     if(n == 0 || area.at(n-1) == 0) cout << 0 << "\n";
     else if(only_square_1(n, area)) cout << 1 << "\n";
-    //else cout << compute_matrix(n, m, 999, mat, area) << "\n";
     else cout << compute_vector(n, area, 0, -1) << "\n";
     return 0;
 }
