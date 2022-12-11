@@ -91,7 +91,6 @@ int compute_vector(int n, vector<int> &area, int lin, int square) {
     for(int i = lin; i < lin + square; i++) {
         copy.at(i) -= square;
     }
-    if(dp.count(copy) == 1) return dp.at(copy);
     if(only_square_1(n, copy)) {
         dp[copy] = 1;
         if(square == 1) return 1;
@@ -106,9 +105,12 @@ int compute_vector(int n, vector<int> &area, int lin, int square) {
             return dp.at(copy);
         }
         else {
+            if(dp.count(copy) == 1) {
+                dp[area] = compute_vector(n, area, lin, square-1);
+                return dp.at(copy) + dp.at(area);
+            }
             dp[area] = compute_vector(n, area, lin, square-1);
             return dp.at(area) + dp.at(copy);
-            return compute_vector(n, area, lin, square-1) + compute_vector(n, copy, 0, -1);
         }
     }
 }
