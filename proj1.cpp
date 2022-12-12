@@ -1,39 +1,30 @@
 #include <iostream>
 #include <vector>
-#include <bits/stdc++.h>
+#include <map>
 
 using namespace std;
 
-map<vector<long>, long long> dp;
+map<vector<int>, long> dp;
 
-void print_vector(vector<long> &vec) {
-    cout << "\n";
-    for(int x : vec) {
-        cout << x;
-    }
-    cout << "\n";
-}
-
-bool only_square_1(int n, vector<long> &area) {
+bool only_square_1(int n, vector<int> &area) {
     int l = area.at(0);
     for(int i = 1; i < n; i++) {
         if(area.at(i) >= l && l > 1) {return false;}
         else {l = area.at(i);} 
     }
-
     return true;
 }
 
-vector<long> copy_vector(int n, vector<long> &area) {
-    vector<long> copy(n);
+vector<int> copy_vector(int n, vector<int> &area) {
+    vector<int> copy(n);
     for(int i = 0; i < n; i++) {
         copy.at(i) = area.at(i);
     }
     return copy;
 }
 
-long long compute_vector(int n, vector<long> &area, int lin, int square) {
-    vector<long> copy(n);
+long compute_vector(int n, vector<int> &area, int lin, int square) {
+    vector<int> copy(n);
     for(int i = 0; i < n; i++) {
         copy.at(i) = area.at(i);
     }
@@ -68,8 +59,8 @@ long long compute_vector(int n, vector<long> &area, int lin, int square) {
             if(square == 1) {dp[copy] = 1; return 1;}
             else {
                 dp[area] = compute_vector(n, area, lin, square-1);
-                dp[copy] = 1;
-                return dp[area] + dp[copy];
+                //dp[copy] = 1;
+                return dp[area] + 1; //+ dp[copy];
             }
         }
         else {
@@ -89,7 +80,7 @@ long long compute_vector(int n, vector<long> &area, int lin, int square) {
 int main() {
     int n, m, k;
     cin >> n >> m;
-    vector<long> area(n);
+    vector<int> area(n);
     for(int i = 0; i < n; i++) {
         cin >> k;
         area.at(i) = k;
