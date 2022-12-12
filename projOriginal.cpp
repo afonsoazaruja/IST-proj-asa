@@ -6,21 +6,13 @@ using namespace std;
 
 map<vector<int>, long> mem;
 
-bool only_square_1(int n, vector<int> &area) {
+bool only1x1(int n, vector<int> &area) {
     int l = area[0];
     for(int i = 1; i < n; i++) {
         if(area[i] >= l && l > 1) {return false;}
         else {l = area[i];} 
     }
     return true;
-}
-
-vector<int> copy_vector(int n, vector<int> &area) {
-    vector<int> copy(n);
-    for(int i = 0; i < n; i++) {
-        copy[i] = area[i];
-    }
-    return copy;
 }
 
 long compute(int n, vector<int> &area, int lin, int square) {
@@ -52,29 +44,23 @@ long compute(int n, vector<int> &area, int lin, int square) {
         copy[i] -= square;
     }
 
-    if(mem.count(copy) == 1) {
-        if(square == 1) {return mem[copy];}
-        else {
-            mem[area] = compute(n, area, lin, square-1);
-            return mem[area] + mem[copy];
-        }
+    if(mem.count(copy)) {
+        if(square == 1) return mem[copy];
+        mem[area] = compute(n, area, lin, square-1);
+        return mem[area] + mem[copy];
     }
-    if(only_square_1(n, copy)) {
+    if(only1x1(n, copy)) {
         if(square == 1) return 1;
-        else {
-            mem[area] = compute(n, area, lin, square-1);
-            return mem[area] + 1;
-        }
+        mem[area] = compute(n, area, lin, square-1);
+        return mem[area] + 1;
     }
     if(square == 1) {
         mem[copy] = compute(n, copy, 0, -1);
         return mem[copy];
     }
-    else {
-        mem[area] = compute(n, area, lin, square-1);
-        mem[copy] = compute(n, copy, 0, -1);
-        return mem[area] + mem[copy];
-    }
+    mem[area] = compute(n, area, lin, square-1);
+    mem[copy] = compute(n, copy, 0, -1);
+    return mem[area] + mem[copy];
 }
 
 int main() {
@@ -85,7 +71,7 @@ int main() {
         cin >> area[i];
     }
     if(n == 0 || area[n-1] == 0) cout << 0 << endl;
-    else if(only_square_1(n, area)) cout << 1 << endl;
+    else if(only1x1(n, area)) cout << 1 << endl;
     else cout << compute(n, area, 0, -1) << endl;
     return 0;
 }
