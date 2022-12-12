@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <algorithm>
 
 using namespace std;
 
@@ -15,6 +16,8 @@ bool only_square_1(int n, vector<int> &area) {
     return true;
 }
 
+
+
 vector<int> copy_vector(int n, vector<int> &area) {
     vector<int> copy(n);
     for(int i = 0; i < n; i++) {
@@ -24,17 +27,14 @@ vector<int> copy_vector(int n, vector<int> &area) {
 }
 
 long compute_vector(int n, vector<int> &area, int lin, int square) {
-    vector<int> copy(n);
-    for(int i = 0; i < n; i++) {
-        copy.at(i) = area.at(i);
-    }
+    cout << "OLA\n";
     if(square == -1) {
-        int col = area.at(0);
+        int col = area[0];
         int consecutive = 1;
         bool previous = (col == area.at(1));
         bool next = false;
             for(int i = 1; i < n; i++) {
-                int sq = area.at(i);
+                int sq = area[i];
                 if(next == true) {previous = true; next = false;}
                 if((sq == col) && (previous)) consecutive++;
                 else if(sq > col) {lin = i; col = sq; consecutive = 1; previous = false; next = true;}
@@ -44,34 +44,39 @@ long compute_vector(int n, vector<int> &area, int lin, int square) {
         else square = col;
     }
     for(int i = lin; i < lin + square; i++) {
-        copy.at(i) -= square;
+        area[i] -= square;
     }
 
-    if(dp.count(copy) == 1) {
-        if(square == 1) {return dp[copy];}
+    if(dp.count(area) == 1) {
+        if(square == 1) {return dp[area];}
         else {
-            dp[area] = compute_vector(n, area, lin, square-1);
-            return dp[area] + dp[copy];
+            long res = dp[area]; //altered
+            for(int i = lin; i < lin + square; i++) {area[i] += square;}
+            dp[area] = compute_vector(n, area, lin, square-1); //original
+            return dp[area] + res;
         }
     }
     else {
-        if(only_square_1(n, copy)) {
-            if(square == 1) {dp[copy] = 1; return 1;}
+        if(only_square_1(n, area)) { //altered
+            if(square == 1) return 1;
             else {
-                dp[area] = compute_vector(n, area, lin, square-1);
-                //dp[copy] = 1;
-                return dp[area] + 1; //+ dp[copy];
+                for(int i = lin; i < lin + square; i++) {area[i] += square;}
+                dp[area] = compute_vector(n, area, lin, square-1); //original
+                return dp[area] + 1;
             }
         }
         else {
             if(square == 1) {
-                dp[copy] = compute_vector(n, copy, 0, -1);
-                return dp[copy];
+                dp[area] = compute_vector(n, area, 0, -1); //altered
+                return dp[area];
             }
             else {
-                dp[area] = compute_vector(n, area, lin, square-1);
-                dp[copy] = compute_vector(n, copy, 0, -1);
-                return dp[area] + dp[copy];
+                dp[area] = compute_vector(n, area, 0, -1); //altered
+                long res = dp[area];
+                for(int i = lin; i < lin + square; i++) {area[i] += square;}
+                dp[area] = compute_vector(n, area, lin, square-1); //original
+                cout << "AQUI\n";
+                return dp[area] + res;
             }
         }
     }

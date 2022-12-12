@@ -1,12 +1,12 @@
 CFLAGS = -O3 -std=c++11 -Wall
 
 program:
-	g++ $(CFLAGS) proj1.cpp -lm -o program
+	g++ $(CFLAGS) projOriginal.cpp -lm -o program
 
 clean:
 	rm -f program
 
-run:
+exec:
 	./program
 
-new: clean program run
+run: clean program exec
