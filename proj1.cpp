@@ -1,3 +1,20 @@
+//  Author: Afonso Azaruja
+//  Last edited: 14/12/2022
+//
+//  Problem: Consider a matrix n by m and then insert n numbers in increasing
+//  order which tell how many spaces in each line, 1 to n, are filled, from left
+//  to right.
+//
+//  Example:
+//  3 3 1 2 3
+//
+//  X O O
+//  X X 0
+//  X X X
+//
+//  Solution: Find the furthest right and fursthest top space and compute the
+//  biggest square that fits.
+
 #include <iostream>
 #include <vector>
 #include <unordered_map>
@@ -18,14 +35,13 @@ unsigned long long hashKey(vector<int> &vec) {
 bool onlyOneByOne(int n, vector<int> &vec) {
     int l = vec[0];
     for(int i = 1; i < n; i++) {
-        if(vec[i] >= l && l > 1) return false;
+        if(l > 1 && vec[i] >= l) return false;
         else {l = vec[i];} 
     }
     return true;
 }
 
 long solve(int n, vector<int> &vec) {
-
     long total = 0;
 
     long key = hashKey(vec);
