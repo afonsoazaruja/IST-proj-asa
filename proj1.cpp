@@ -4,19 +4,10 @@
 
 using namespace std;
 
-unordered_map<long, unsigned long> mem;
+unordered_map<unsigned long long, long> mem(1024);
 
-bool onlyOneByOne(int n, vector<int> &area) {
-    int l = area[0];
-    for(int i = 1; i < n; i++) {
-        if(area[i] >= l && l > 1) {return false;}
-        else {l = area[i];} 
-    }
-    return true;
-}
-
-unsigned long hashKey(vector<int> &vec) {
-    unsigned long key = 0;
+unsigned long long hashKey(vector<int> &vec) {
+    unsigned long long key = 0;
     for(int i : vec) {
         key += i;
         key *= 10;
@@ -24,40 +15,51 @@ unsigned long hashKey(vector<int> &vec) {
     return key;
 }
 
-unsigned long solve(int n, vector<int> &area) {
-    if(onlyOneByOne(n, area)) return 1;
+bool onlyOneByOne(int n, vector<int> &vec) {
+    int l = vec[0];
+    for(int i = 1; i < n; i++) {
+        if(vec[i] >= l && l > 1) return false;
+        else {l = vec[i];} 
+    }
+    return true;
+}
 
-    unsigned long total = 0;
+long solve(int n, vector<int> &vec) {
 
-    unsigned long key = hashKey(area);
+    long total = 0;
+
+    long key = hashKey(vec);
     
-    if(mem.count(key)) total = mem[key];
+    if(mem.count(key)) return mem[key];
+    
+    else if(onlyOneByOne(n, vec)) return 1;
     
     else {
-        int square;
+        int col = vec[0];
         int lin = 0;
-        int col = area[0]; int consecutive = 1;
-        bool previous = (col == area[1]); bool next = false;
-        for(int i = 1; i < n; i++) {
-            int sq = area[i];
-            if(next == true) {previous = true; next = false;}
-            if((sq == col) && (previous)) consecutive++;
-            else if(sq > col) {
-                lin = i; 
-                col = sq; 
-                consecutive = 1; 
-                previous = false; 
+        int consecutive = 1;
+        int i = 1;
+        bool next = true;
+        while(i < n) {
+            while(vec[i] == col && next && i < n) {
+                i++; consecutive++;
+            }
+            if(i == n) break;
+            next = false;
+            if(vec[i] > col) {
+                lin = i;
+                col = vec[i];
+                consecutive = 1;
                 next = true;
             }
-            else previous = false;
+            i++;
         }
-        if(col > consecutive) square = consecutive;
-        else square = col;
-        while(square > 0) {
-            for(int i = lin; i < lin + square; i++) area[i] -= square;
-            total += solve(n, area);
-            for(int i = lin; i < lin + square; i++) area[i] += square;
-            square--;
+        if(col > consecutive) col = consecutive;
+        while(col > 0) {
+            for(int i = lin; i < lin + col; i++) vec[i] -= col;
+            total += solve(n, vec);
+            for(int i = lin; i < lin + col; i++) vec[i] += col;
+            col--;
         }
         mem[key] = total;
     }
@@ -67,10 +69,10 @@ unsigned long solve(int n, vector<int> &area) {
 int main() {
     int n, m;
     cin >> n >> m;
-    vector<int> area(n);
-    for(int i = 0; i < n; i++) cin >> area[i];
-    if(n == 0 || area[n-1] == 0) cout << 0 << endl;
-    else if(onlyOneByOne(n, area)) cout << 1 << endl;
-    else cout << solve(n, area) << endl;
+    vector<int> vec(n);
+    for(int i = 0; i < n; i++) cin >> vec[i];
+    if(n == 0 || vec[n-1] == 0) cout << 0 << endl;
+    else if(onlyOneByOne(n, vec)) cout << 1 << endl;
+    else cout << solve(n, vec) << endl;
     return 0;
 }
