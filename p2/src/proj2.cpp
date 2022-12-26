@@ -20,13 +20,14 @@ void addEdge(vector<Edge> *adj, int u, int v, int w) {
 
 int extract_max(vector<int> key, vector<int> queue, int v) {
     int max = 0;
-    for (int i = 0; i < v; i++) {
+    int i = 0;
+    for (; i < v; i++) {
         if (queue[i] != 0) {
             max = i;
             break;
         }
     }
-    for (int i = 0; i < v; i++) {
+    for (; i < v; i++) {
         if (queue[i] != 0 && key[i] > key[max]) {
             max = i; 
         }
