@@ -1,7 +1,5 @@
-CFLAGS = -O3 -std=c++11 -Wall -g
-
 make:
-	g++ $(CFLAGS) proj2.cpp -lm -o proj2
+	g++ -std=c++11 -O3 -Wall -Wextra kruskal.cpp -lm -o proj2
 
 clean:
 	rm -f proj2
