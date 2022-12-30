@@ -1,36 +1,27 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
 typedef struct {
-    int u;
-    int v;
-    int w;
+    unsigned int u = 0;
+    unsigned int v = 0;
+    unsigned int w = 0;
 } Edge;
 
-int comparator(Edge p1, Edge p2) {
-    return p2.w-p1.w;
+bool comparator(const Edge &a, const Edge &b) {
+    return a.w > b.w;
 }
 
-Edge make_edge(int u, int v, int w) {
-    Edge edge = {u, v, w};
-    return edge;
-}
-
-void make_set(int x, int p[], int rank[]) {
-    p[x] = x;
-    rank[x] = 0;
-}
-
-int find_set(int x, int p[]) {
+unsigned int find_set(unsigned int x, unsigned int p[]) {
     if (x != p[x]) {
         p[x] = find_set(p[x], p);
     }
     return p[x];
 }
 
-void link(int x, int y, int p[], int rank[]) {
+void link(unsigned int x, unsigned int y, unsigned int p[], unsigned int rank[]) {
     if (rank[x] > rank[y]) {
         p[y] = x;
     }
@@ -42,52 +33,49 @@ void link(int x, int y, int p[], int rank[]) {
     }
 }
 
-void union_set(int x, int y, int p[], int rank[]) {
+void union_set(unsigned int x, unsigned int y, unsigned int p[], unsigned int rank[]) {
     link(find_set(x, p), find_set(y, p), p, rank);
 }
 
-
-int solve(vector<Edge> edges, int e, int p[], int rank[]) {
-    qsort(edges, e, sizeof(edges[0]), comparator);
-    int res = 0;
+unsigned int solve(vector<Edge> edges, unsigned int p[], unsigned int rank[], unsigned int v) {
+    sort(edges.begin(), edges.end(), comparator);
+    for (Edge ed : edges) {
+        cout << ed.u << ' ' << ed.v << ' ' << ed.w << "\n"; 
+    }
+    cout << ".......\n";
+    unsigned int res = 0;
+    unsigned int stop = 0;
     for (Edge ed : edges) {
         if (find_set(ed.u, p) != find_set(ed.v, p)) {
+            cout << ed.u << ' ' << ed.v << ' ' << ed.w << "\n"; 
             union_set(ed.u, ed.v, p, rank);
             res += ed.w;
+            if (++stop == v-1) break;
         }
     }
     return res;
 }
 
-
 int main() {
-    int v, e;
-    cin >> v >> e;
-    if (e == 0) {
+    unsigned int V, E;
+    if (scanf("%u %u", &V, &E) == 0) return 0;
+    if (E == 0) {
         cout << 0 << endl;
         return 0;
     }
-    vector<Edge> edges[e];
-    int p[e];
-    int rank[e]
-    for (int i = 0; i < v; i++) {
-        make_set(i);
+    vector<Edge> edges(E);
+    unsigned int u, v, w;
+    for (unsigned int i = 0; i < E; i++) {
+        if (scanf("%u %u %u", &u, &v, &w) == 0) return 0;
+        edges[i].u = u-1;
+        edges[i].v = v-1;
+        edges[i].w = w;
     }
-    int u, v, w;
-    for (int i = 0; i < e; i++) {
-        cin >> u >> v >> w;
-        edges[i] = make_edge(u, v, w);
+    unsigned int rank[V] = {0};
+    unsigned int p[V];
+    for (unsigned int i = 0; i < V; i++) { // make-set
+        p[i] = i;
     }
-
-    /*
-    for (int i = 0; i < v; i++) {
-        cout << i << "->";
-        for (Edge j : adj[i]) {
-            cout << "(" << j.v << "," << j.w << ")";
-        }
-        cout << "\n";
-    }
-    */
-    cout << solve(edges, e) << endl;
+    cout << solve(edges, p, rank, V) << endl;
     return 0;
 }

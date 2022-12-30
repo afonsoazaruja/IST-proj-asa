@@ -1,5 +1,5 @@
 make:
-	g++ -std=c++11 -O3 -Wall -Wextra kruskal.cpp -lm -o proj2
+	g++ -std=c++11 -O3 -Wall kruskal2.cpp -lm -g -o proj2
 
 clean:
 	rm -f proj2
