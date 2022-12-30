@@ -71,7 +71,7 @@ int main() {
     int res = 0;
     sort(edges.begin(), edges.end(), sortDescending); // O(E*logE)
     for (Edge ed : edges) { // O(E)
-        if (obj.find(ed.u) != obj.find(ed.v)) {
+        if (obj.find(ed.u) != obj.find(ed.v)) { // O(logE)
             obj.Union(ed.u, ed.v);
             res += ed.w;
         }
