@@ -34,17 +34,17 @@ public:
         return parent[x];
     }
 
-    void Union(int x, int y) {
-        int xset = find(x);
-        int yset = find(y);
+    void unionSet(int x, int y) {
+        int xp = find(x);
+        int yp = find(y);
 
-        if (rank[xset] > rank[yset]) {
-            parent[yset] = xset;
+        if (rank[xp] > rank[yp]) {
+            parent[yp] = xp;
         }
         else {
-            parent[xset] = yset;
-            if (rank[xset] == rank[yset]) {
-                rank[yset] = rank[yset] + 1;
+            parent[xp] = yp;
+            if (rank[xp] == rank[yp]) {
+                rank[yp] += 1;
             }
         }
     }
@@ -55,14 +55,15 @@ bool sortDescending(const Edge &a, const Edge &b) {
 }
 
 int main() {
+    ios::sync_with_stdio(false);
     int V, E;
-    if (scanf("%d %d", &V, &E) == 0) return 0;
+    cin >> V >> E;
     DisjSet obj(V); // O(V)
     vector<Edge> edges(E); // O(E)
     
     int u, v, w;
     for (int i = 0; i < E; i++) { // O(E)
-        if (scanf("%d %d %d", &u, &v, &w) == 0) return 0;
+        cin >> u >> v >> w;
         edges[i].u = u-1;
         edges[i].v = v-1;
         edges[i].w = w;
@@ -70,10 +71,10 @@ int main() {
     
     int res = 0;
     sort(edges.begin(), edges.end(), sortDescending); // O(E*logE)
-    for (Edge ed : edges) { // O(E)
-        if (obj.find(ed.u) != obj.find(ed.v)) { // O(logE)
-            obj.Union(ed.u, ed.v);
-            res += ed.w;
+    for (Edge e : edges) { // O(E)
+        if (obj.find(e.u) != obj.find(e.v)) { // O(logE)
+            obj.unionSet(e.u, e.v);
+            res += e.w;
         }
     }
     cout << res << endl;
